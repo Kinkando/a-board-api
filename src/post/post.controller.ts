@@ -39,7 +39,7 @@ export class PostController {
 
   @Get('')
   @HttpCode(HttpStatus.OK)
-  async getPost(@Query() req: ListPostsRequestDto) {
+  async listPosts(@Query() req: ListPostsRequestDto) {
     try {
       return await this.postService.listPosts(req);
     } catch (error) {
