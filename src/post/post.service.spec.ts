@@ -302,8 +302,8 @@ describe('PostService', () => {
 
     dbMock.transaction.mockReturnThis();
     dbMock.execute
-      .mockResolvedValueOnce([{ numUpdatedRows: 0 }])
-      .mockResolvedValueOnce([{ numUpdatedRows: 1 }]);
+      .mockResolvedValueOnce([{ numDeletedRows: 0 }])
+      .mockResolvedValueOnce([{ numDeletedRows: 1 }]);
 
     await service.deletePost(postId, userId);
 
@@ -320,6 +320,117 @@ describe('PostService', () => {
 
     expect(
       async () => await service.deletePost(postId, userId),
+    ).rejects.toThrow(error);
+
+    expect(dbMock.execute).toHaveBeenCalled();
+  });
+
+  it('create comment success', async () => {
+    const userId = v7();
+    const postId = v7();
+    const comment = 'comment';
+
+    dbMock.execute.mockReturnThis();
+
+    const commentId = await service.createComment(postId, { comment }, userId);
+
+    expect(commentId).toBeDefined();
+
+    expect(dbMock.insertInto).toHaveBeenCalledWith('comment');
+    expect(dbMock.execute).toHaveBeenCalled();
+  });
+
+  it('create comment failed', async () => {
+    const userId = v7();
+    const postId = v7();
+    const comment = 'comment';
+
+    dbMock.execute.mockRejectedValue(new Error('database error'));
+
+    expect(
+      async () => await service.createComment(postId, { comment }, userId),
+    ).rejects.toThrow();
+
+    expect(dbMock.insertInto).toHaveBeenCalledWith('comment');
+    expect(dbMock.execute).toHaveBeenCalled();
+  });
+
+  it('update comment success', async () => {
+    const userId = v7();
+    const commentId = v7();
+    const comment = 'comment';
+
+    dbMock.execute.mockResolvedValue([{ numUpdatedRows: 1 }]);
+
+    await service.updateComment(commentId, { comment }, userId);
+
+    expect(dbMock.updateTable).toHaveBeenCalledWith('comment');
+    expect(dbMock.execute).toHaveBeenCalled();
+  });
+
+  it('update comment failed: transaction is not found', async () => {
+    const userId = v7();
+    const commentId = v7();
+    const comment = 'comment';
+
+    dbMock.execute.mockResolvedValue([{ numUpdatedRows: 0 }]);
+
+    expect(
+      async () => await service.updateComment(commentId, { comment }, userId),
+    ).rejects.toThrow(new Error('update comment failed'));
+
+    expect(dbMock.updateTable).toHaveBeenCalledWith('comment');
+    expect(dbMock.execute).toHaveBeenCalled();
+  });
+
+  it('update comment failed: database error', async () => {
+    const userId = v7();
+    const commentId = v7();
+    const comment = 'comment';
+
+    dbMock.execute.mockRejectedValue(new Error('database error'));
+
+    expect(
+      async () => await service.updateComment(commentId, { comment }, userId),
+    ).rejects.toThrow();
+
+    expect(dbMock.updateTable).toHaveBeenCalledWith('comment');
+    expect(dbMock.execute).toHaveBeenCalled();
+  });
+
+  it('delete comment success', async () => {
+    const userId = v7();
+    const commentId = v7();
+
+    dbMock.execute.mockResolvedValue([{ numDeletedRows: 1 }]);
+
+    await service.deleteComment(commentId, userId);
+
+    expect(dbMock.execute).toHaveBeenCalled();
+  });
+
+  it('delete comment failed: transaction is not found', async () => {
+    const userId = v7();
+    const commentId = v7();
+
+    dbMock.execute.mockResolvedValue([{ numDeletedRows: 0 }]);
+
+    expect(
+      async () => await service.deleteComment(commentId, userId),
+    ).rejects.toThrow(new Error('delete comment failed'));
+
+    expect(dbMock.execute).toHaveBeenCalled();
+  });
+
+  it('delete comment failed', async () => {
+    const userId = v7();
+    const commentId = v7();
+
+    const error = new Error('delete comment failed');
+    dbMock.execute.mockRejectedValue(error);
+
+    expect(
+      async () => await service.deleteComment(commentId, userId),
     ).rejects.toThrow(error);
 
     expect(dbMock.execute).toHaveBeenCalled();
