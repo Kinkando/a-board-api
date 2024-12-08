@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Kysely } from 'kysely';
 import { v7 } from 'uuid';
 import { NotFoundException } from '@nestjs/common';
+import { databaseProvider } from '../module/database.module';
 
 describe('UserService', () => {
   let service: UserService;
@@ -19,7 +20,7 @@ describe('UserService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule.forRoot()],
-      providers: [UserService, { provide: 'DATABASE', useValue: dbMock }],
+      providers: [UserService, { provide: databaseProvider, useValue: dbMock }],
     }).compile();
 
     service = module.get<UserService>(UserService);
