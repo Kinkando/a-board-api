@@ -37,3 +37,15 @@ export class UpdatePostRequestDto {
   @IsString()
   content: string;
 }
+
+export class CreateCommentRequestDto {
+  @IsNotEmpty({ message: 'comment is required' })
+  @IsString()
+  comment: string;
+}
+
+export class UpdateCommentRequestDto {
+  @IsNotEmpty({ message: 'comment is required' })
+  @IsString()
+  comment: string;
+}

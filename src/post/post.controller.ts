@@ -17,8 +17,10 @@ import {
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import {
+  CreateCommentRequestDto,
   CreatePostRequestDto,
   ListPostsRequestDto,
+  UpdateCommentRequestDto,
   UpdatePostRequestDto,
 } from '../@types/post.dto';
 import { Profile } from '../@types/user.interface';
@@ -117,6 +119,58 @@ export class PostController {
   ) {
     try {
       await this.postService.deletePost(postId, profile.userId);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException({ error: `${error}` });
+    }
+  }
+
+  @Post(':postId/comment')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async createComment(
+    @Param('postId') postId: string,
+    @ProfileDecorator() profile: Profile,
+    @Body() req: CreateCommentRequestDto,
+  ) {
+    try {
+      const commentId = await this.postService.createComment(
+        postId,
+        req,
+        profile.userId,
+      );
+      return { commentId };
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException({ error: `${error}` });
+    }
+  }
+
+  @Patch(':postId/comment/:commentId')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateComment(
+    @Param('commentId') commentId: string,
+    @ProfileDecorator() profile: Profile,
+    @Body() req: UpdateCommentRequestDto,
+  ) {
+    try {
+      await this.postService.updateComment(commentId, req, profile.userId);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException({ error: `${error}` });
+    }
+  }
+
+  @Delete(':postId/comment/:commentId')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteComment(
+    @Param('commentId') commentId: string,
+    @ProfileDecorator() profile: Profile,
+  ) {
+    try {
+      await this.postService.deleteComment(commentId, profile.userId);
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException({ error: `${error}` });

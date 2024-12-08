@@ -3,8 +3,10 @@ import { Kysely, sql } from 'kysely';
 import { DB } from 'kysely-codegen';
 import { v7 } from 'uuid';
 import {
+  CreateCommentRequestDto,
   CreatePostRequestDto,
   ListPostsRequestDto,
+  UpdateCommentRequestDto,
   UpdatePostRequestDto,
 } from '../@types/post.dto';
 import { databaseProvider } from '../module/database.module';
@@ -165,5 +167,66 @@ export class PostService {
         throw Error('delete post failed');
       }
     });
+  }
+
+  async createComment(
+    postId: string,
+    req: CreateCommentRequestDto,
+    userId: string,
+  ) {
+    this.logger.log(
+      `createComment: ${JSON.stringify({ ...req, postId, userId })}`,
+    );
+
+    const comment = {
+      id: v7(),
+      comment: req.comment,
+      postId,
+      userId,
+      createdAt: new Date(),
+    };
+
+    await this.db.insertInto('comment').values(comment).execute();
+
+    return comment.id;
+  }
+
+  async updateComment(
+    commentId: string,
+    req: UpdateCommentRequestDto,
+    userId: string,
+  ) {
+    this.logger.log(
+      `updateComment: ${JSON.stringify({ ...req, commentId, userId })}`,
+    );
+
+    const result = await this.db
+      .updateTable('comment')
+      .set({
+        comment: req.comment,
+      })
+      .where('id', '=', commentId)
+      .where('userId', '=', userId)
+      .execute();
+
+    if (!result || !result[0].numUpdatedRows) {
+      this.logger.error('update comment failed');
+      throw Error('update comment failed');
+    }
+  }
+
+  async deleteComment(commentId: string, userId: string) {
+    this.logger.log(`deleteComment: ${JSON.stringify({ commentId, userId })}`);
+
+    const result = await this.db
+      .deleteFrom('comment')
+      .where('id', '=', commentId)
+      .where('userId', '=', userId)
+      .execute();
+
+    if (!result || !result[0].numDeletedRows) {
+      this.logger.error('delete comment failed');
+      throw Error('delete comment failed');
+    }
   }
 }
