@@ -37,6 +37,10 @@ describe('UserController', () => {
     await app.init();
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   it('get user success', async () => {
     const user = {
       id: v7(),

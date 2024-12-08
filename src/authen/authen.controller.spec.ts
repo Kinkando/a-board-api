@@ -33,6 +33,10 @@ describe('AuthenController', () => {
     await app.init();
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   it('login success', async () => {
     const jwt = {
       accessToken: 'access-jwt',
