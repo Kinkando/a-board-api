@@ -108,9 +108,9 @@ export class PostService {
         communityId: Number(post.communityId),
         editable: userId === post.authorId,
         deletable: userId === post.authorId,
-        commentCount: comments.length,
+        commentCount: comments?.length ?? 0,
       },
-      comments: comments.map((comment) => ({
+      comments: (comments ?? []).map((comment) => ({
         ...comment,
         editable: userId === comment.userId,
         deletable: userId === comment.userId,
