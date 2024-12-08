@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
@@ -15,10 +15,31 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  afterAll((done) => {
+    app.close();
+    done();
+  });
+
+  it('login success', () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .post('/auth/login')
+      .set('X-Api-Key', process.env.API_KEY)
+      .send({ username: 'test' })
+      .expect(HttpStatus.OK);
+  });
+
+  it('login failed: invalid api key', () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .set('X-Api-Key', 'invalid')
+      .send({ username: 'test' })
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+
+  it('login failed: missing api key', () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ username: 'test' })
+      .expect(HttpStatus.UNAUTHORIZED);
   });
 });
