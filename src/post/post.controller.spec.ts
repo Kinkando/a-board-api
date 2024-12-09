@@ -8,7 +8,6 @@ import { JwtService } from '../jwt/jwt.service';
 
 describe('PostController', () => {
   let app: INestApplication;
-  let jwtService: JwtService;
   let postService: jest.Mocked<PostService>;
   let controller: PostController;
 
@@ -37,7 +36,6 @@ describe('PostController', () => {
     }).compile();
 
     controller = module.get<PostController>(PostController);
-    jwtService = module.get<JwtService>(JwtService);
     app = module.createNestApplication();
     await app.init();
   });
@@ -88,12 +86,10 @@ describe('PostController', () => {
       authorName: 'Kookkai',
       authorImageUrl: null,
     };
-    const { accessToken } = jwtService.encodeJwt(post.authorId);
     postService.getPostDetail.mockResolvedValue({ post, comments: [] });
-    const response = await controller.getPostDetail(
-      post.postId,
-      `Bearer ${accessToken}`,
-    );
+    const response = await controller.getPostDetail(post.postId, {
+      userId: post.authorId,
+    });
     expect(response).toEqual({ post, comments: [] });
   });
 
@@ -105,12 +101,8 @@ describe('PostController', () => {
   });
 
   it('get post detail failed: token is invalid', async () => {
-    const { refreshToken } = jwtService.encodeJwt(v7());
     postService.getPostDetail.mockRejectedValue(new NotFoundException());
-    expect(
-      async () =>
-        await controller.getPostDetail(v7(), `Bearer ${refreshToken}`),
-    ).rejects.toThrow();
+    expect(async () => await controller.getPostDetail(v7())).rejects.toThrow();
   });
 
   it('get post detail failed', async () => {
