@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
@@ -14,6 +13,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import {
@@ -26,6 +26,7 @@ import {
 import { Profile } from '../@types/user.interface';
 import { ProfileDecorator } from '../decorator/profile.decorator';
 import { AuthGuard } from '../guard/auth.guard';
+import { ProfileInterceptor } from '../interceptor/profile.interceptor';
 import { JwtService } from '../jwt/jwt.service';
 
 @Controller('post')
@@ -50,25 +51,13 @@ export class PostController {
 
   @Get(':postId')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ProfileInterceptor)
   async getPostDetail(
     @Param('postId') postId: string,
-    @Headers('Authorization') authorization: string,
+    @ProfileDecorator() profile?: Profile,
   ) {
-    let userId: string;
     try {
-      const [, token] = authorization?.split(' ') ?? [];
-      const jwt = this.jwtService.decodeJwt(token);
-      if (jwt.type !== 'access') {
-        throw Error('jwt is not access token');
-      }
-      userId = jwt.userId;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      userId = undefined;
-    }
-
-    try {
-      return await this.postService.getPostDetail(postId, userId);
+      return await this.postService.getPostDetail(postId, profile?.userId);
     } catch (error) {
       this.logger.error(error);
       if (error instanceof NotFoundException) {
