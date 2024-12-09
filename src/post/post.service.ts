@@ -52,6 +52,7 @@ export class PostService {
         'post.updatedAt',
         sql<number>`COUNT(comment.id)`.as('commentCount'),
       ])
+      .orderBy('createdAt desc')
       .execute();
 
     return result.map((data) => ({
@@ -100,6 +101,7 @@ export class PostService {
         'comment.createdAt',
         'comment.updatedAt',
       ])
+      .orderBy('createdAt desc')
       .execute();
 
     return {

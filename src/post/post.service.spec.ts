@@ -28,6 +28,7 @@ describe('PostService', () => {
       innerJoin: jest.fn().mockReturnThis(),
       insertInto: jest.fn().mockReturnThis(),
       values: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
       executeTakeFirst: jest.fn(),
       execute: jest.fn(),
       transaction: jest.fn().mockReturnThis(),
