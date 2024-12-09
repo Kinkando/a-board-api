@@ -27,16 +27,12 @@ import { Profile } from '../@types/user.interface';
 import { ProfileDecorator } from '../decorator/profile.decorator';
 import { AuthGuard } from '../guard/auth.guard';
 import { ProfileInterceptor } from '../interceptor/profile.interceptor';
-import { JwtService } from '../jwt/jwt.service';
 
 @Controller('post')
 export class PostController {
   private readonly logger = new Logger('PostController');
 
-  constructor(
-    private readonly postService: PostService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly postService: PostService) {}
 
   @Get('')
   @HttpCode(HttpStatus.OK)
