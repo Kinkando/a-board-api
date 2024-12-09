@@ -208,6 +208,17 @@ describe('PostService', () => {
     expect(dbMock.executeTakeFirst).toHaveBeenCalled();
   });
 
+  it('get post detail failed: transaction is not found', async () => {
+    dbMock.executeTakeFirst.mockResolvedValue(undefined);
+
+    expect(async () => await service.getPostDetail(v7())).rejects.toThrow(
+      new NotFoundException(),
+    );
+
+    expect(dbMock.selectFrom).toHaveBeenCalledWith('post');
+    expect(dbMock.executeTakeFirst).toHaveBeenCalled();
+  });
+
   it('get post detail failed: database error on 1st query', async () => {
     dbMock.executeTakeFirst.mockRejectedValue(new Error('database error'));
 

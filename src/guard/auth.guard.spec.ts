@@ -69,4 +69,12 @@ describe('AuthGuard', () => {
       .get('/auth-guard/test')
       .expect(HttpStatus.UNAUTHORIZED);
   });
+
+  it('auth guard failure: refresh token is not allowed', async () => {
+    const { refreshToken } = jwtService.encodeJwt(v7());
+    await request(app.getHttpServer())
+      .get('/auth-guard/test')
+      .set('Authorization', `Bearer ${refreshToken}`)
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
 });
