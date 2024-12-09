@@ -111,6 +111,7 @@ describe('PostService', () => {
     const result = await service.listPosts({
       communityId: '1',
       search: 'post',
+      authorId: v7(),
     });
 
     expect(result).toBeDefined();

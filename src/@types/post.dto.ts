@@ -8,6 +8,10 @@ export class ListPostsRequestDto {
   @IsString()
   @IsOptional()
   communityId?: string;
+
+  @IsString()
+  @IsOptional()
+  authorId?: string;
 }
 
 export class CreatePostRequestDto {

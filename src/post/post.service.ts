@@ -29,6 +29,9 @@ export class PostService {
     if (req.communityId) {
       query = query.where('post.communityId', '=', req.communityId);
     }
+    if (req.authorId) {
+      query = query.where('post.authorId', '=', req.authorId);
+    }
     if (req.search) {
       query = query.where(
         sql<string>`lower(post.title)`,
