@@ -98,6 +98,13 @@ describe('AppController (e2e)', () => {
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
+  it('get communities success', async () => {
+    return request(app.getHttpServer())
+      .get('/community')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
+  });
+
   it('get user success', async () => {
     return request(app.getHttpServer())
       .get('/user')
