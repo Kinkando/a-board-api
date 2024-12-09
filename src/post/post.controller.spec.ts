@@ -104,6 +104,15 @@ describe('PostController', () => {
     ).rejects.toThrow();
   });
 
+  it('get post detail failed: token is invalid', async () => {
+    const { refreshToken } = jwtService.encodeJwt(v7());
+    postService.getPostDetail.mockRejectedValue(new NotFoundException());
+    expect(
+      async () =>
+        await controller.getPostDetail(v7(), `Bearer ${refreshToken}`),
+    ).rejects.toThrow();
+  });
+
   it('get post detail failed', async () => {
     postService.getPostDetail.mockRejectedValue(new Error('list posts error'));
     expect(
@@ -169,6 +178,71 @@ describe('PostController', () => {
     postService.deletePost.mockRejectedValue(new Error('delete post error'));
     expect(
       async () => await controller.deletePost(postId, { userId: v7() }),
+    ).rejects.toThrow();
+  });
+
+  it('create comment success', async () => {
+    const postId = v7();
+    const userId = v7();
+    const comment = 'comment';
+    postService.createComment.mockResolvedValue(v7());
+    const commentId = await controller.createComment(
+      postId,
+      { userId },
+      { comment },
+    );
+    expect(commentId).toBeDefined();
+  });
+
+  it('create post failed', async () => {
+    const postId = v7();
+    const userId = v7();
+    const comment = 'comment';
+    postService.createComment.mockRejectedValue(
+      new Error('create comment error'),
+    );
+    expect(
+      async () =>
+        await controller.createComment(postId, { userId }, { comment }),
+    ).rejects.toThrow();
+  });
+
+  it('update comment success', async () => {
+    const commentId = v7();
+    const userId = v7();
+    const comment = 'comment';
+    postService.updateComment.mockReturnThis();
+    await controller.updateComment(commentId, { userId }, { comment });
+  });
+
+  it('update post failed', async () => {
+    const commentId = v7();
+    const userId = v7();
+    const comment = 'comment';
+    postService.updateComment.mockRejectedValue(
+      new Error('update comment error'),
+    );
+    expect(
+      async () =>
+        await controller.updateComment(commentId, { userId }, { comment }),
+    ).rejects.toThrow();
+  });
+
+  it('delete comment success', async () => {
+    const commentId = v7();
+    const userId = v7();
+    postService.deleteComment.mockReturnThis();
+    await controller.deleteComment(commentId, { userId });
+  });
+
+  it('delete post failed', async () => {
+    const commentId = v7();
+    const userId = v7();
+    postService.deleteComment.mockRejectedValue(
+      new Error('delete comment error'),
+    );
+    expect(
+      async () => await controller.deleteComment(commentId, { userId }),
     ).rejects.toThrow();
   });
 });
