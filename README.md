@@ -56,6 +56,16 @@ pnpm start
 
 ---
 
+## Application Architecture
+
+- Application Architecture
+  ![Appliaction Architecture](/assets/application-architecture.png)
+
+- Database Diagram
+  ![Database Diagram (Schema)](/assets/db-diagram.png)
+
+---
+
 ## Related Packages
 
 - `class-transformer` and `class-validator`:
