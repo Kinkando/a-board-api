@@ -61,13 +61,25 @@ describe('PostController', () => {
       },
     ];
     postService.listPosts.mockResolvedValue(posts);
-    const response = await controller.listPosts({ yourPost: 'true' });
+    const response = await controller.listPosts(
+      { yourPost: 'true' },
+      { userId: v7() },
+    );
     expect(response).toEqual(posts);
   });
 
-  it('list posts failed', async () => {
+  it('list posts failed: database error', async () => {
     postService.listPosts.mockRejectedValue(new Error('list posts error'));
-    expect(async () => await controller.listPosts({})).rejects.toThrow();
+    expect(
+      async () =>
+        await controller.listPosts({ yourPost: 'true' }, { userId: v7() }),
+    ).rejects.toThrow();
+  });
+
+  it('list posts failed: unauthorized', async () => {
+    expect(
+      async () => await controller.listPosts({ yourPost: 'true' }),
+    ).rejects.toThrow();
   });
 
   it('get post detail success', async () => {

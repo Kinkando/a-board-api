@@ -12,6 +12,7 @@ import {
   Patch,
   Post,
   Query,
+  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -43,11 +44,17 @@ export class PostController {
   ) {
     try {
       if (req.yourPost === 'true') {
+        if (!profile?.userId) {
+          throw new UnauthorizedException('token is required');
+        }
         req.authorId = profile?.userId;
       }
       return await this.postService.listPosts(req);
     } catch (error) {
       this.logger.error(error);
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException({ error: `${error}` });
+      }
       throw new InternalServerErrorException({ error: `${error}` });
     }
   }

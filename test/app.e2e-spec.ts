@@ -170,6 +170,12 @@ describe('AppController (e2e)', () => {
       .expect(HttpStatus.OK);
   });
 
+  it('list posts failed: login required', async () => {
+    return await request(app.getHttpServer())
+      .get(`/post?yourPost=true`)
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+
   it('update post success', async () => {
     return await request(app.getHttpServer())
       .patch(`/post/${postId}`)
