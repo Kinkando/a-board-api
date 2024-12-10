@@ -104,3 +104,9 @@ pnpm test:cov
 ```sh
 pnpm test:e2e
 ```
+
+## Extra Requirements
+
+- Implemented sign-in and sign-out functionality in the mobile drawer to support both actions across all devices (the design only included sign-in for desktop).
+- Added a sign-out feature to allow users to switch accounts (the design did not include sign-out functionality).
+- Added the ability to edit and delete comments on the post detail page, allowing users to modify or remove their comments at any time (the design did not include this feature, but it was part of the requirements).
