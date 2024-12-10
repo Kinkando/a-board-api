@@ -42,7 +42,7 @@ export class PostController {
     @ProfileDecorator() profile?: Profile,
   ) {
     try {
-      if (req.yourPost) {
+      if (req.yourPost === 'true') {
         req.authorId = profile?.userId;
       }
       return await this.postService.listPosts(req);

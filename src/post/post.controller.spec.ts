@@ -61,7 +61,7 @@ describe('PostController', () => {
       },
     ];
     postService.listPosts.mockResolvedValue(posts);
-    const response = await controller.listPosts({ yourPost: true });
+    const response = await controller.listPosts({ yourPost: 'true' });
     expect(response).toEqual(posts);
   });
 
