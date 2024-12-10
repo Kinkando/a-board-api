@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class ListPostsRequestDto {
   @IsString()
@@ -12,6 +18,10 @@ export class ListPostsRequestDto {
   @IsString()
   @IsOptional()
   authorId?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  yourPost?: boolean;
 }
 
 export class CreatePostRequestDto {

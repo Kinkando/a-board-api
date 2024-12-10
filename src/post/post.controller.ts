@@ -36,8 +36,15 @@ export class PostController {
 
   @Get('')
   @HttpCode(HttpStatus.OK)
-  async listPosts(@Query() req: ListPostsRequestDto) {
+  @UseInterceptors(ProfileInterceptor)
+  async listPosts(
+    @Query() req: ListPostsRequestDto,
+    @ProfileDecorator() profile?: Profile,
+  ) {
     try {
+      if (req.yourPost) {
+        req.authorId = profile?.userId;
+      }
       return await this.postService.listPosts(req);
     } catch (error) {
       this.logger.error(error);
